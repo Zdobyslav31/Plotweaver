@@ -67,7 +67,8 @@ test("Sign up with invalid email", async ({ page }) => {
   )
   await page.getByRole("button", { name: "Sign Up" }).click()
 
-  await expect(page.getByText("Invalid email address")).toBeVisible()
+  await expect(page.getByTestId("email-input")).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByText('Invalid input')).toBeVisible()
 })
 
 test("Sign up with existing email", async ({ page }) => {
@@ -142,7 +143,8 @@ test("Sign up with missing email", async ({ page }) => {
   await fillForm(page, fullName, email, password, password)
   await page.getByRole("button", { name: "Sign Up" }).click()
 
-  await expect(page.getByText("Invalid email address")).toBeVisible()
+  await expect(page.getByTestId("email-input")).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByText('Invalid input')).toBeVisible()
 })
 
 test("Sign up with missing password", async ({ page }) => {
