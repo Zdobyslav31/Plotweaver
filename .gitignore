@@ -6,4 +6,3 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-frontend/src/routeTree.gen.ts
