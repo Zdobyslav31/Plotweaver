@@ -4,6 +4,9 @@ import { createUser } from "./utils/privateApi"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser } from "./utils/user"
 
+// Auth intent: mixed.
+// Default tests use shared authenticated superuser state from config,
+// while access-control checks override to anonymous state explicitly.
 test("Admin page is accessible and shows correct title", async ({ page }) => {
   await page.goto("/admin")
   await expect(page.getByRole("heading", { name: "Users" })).toBeVisible()

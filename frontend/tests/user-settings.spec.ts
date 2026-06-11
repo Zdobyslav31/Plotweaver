@@ -4,6 +4,9 @@ import { createUser } from "./utils/privateApi.ts"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser, logOutUser } from "./utils/user"
 
+// Auth intent: mixed.
+// Top-level settings/theme checks use shared authenticated state from config.
+// Profile/password mutation flows override to anonymous and create fresh users.
 const tabs = ["My profile", "Password", "Danger zone"]
 
 test("My profile tab is active by default", async ({ page }) => {

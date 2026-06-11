@@ -36,6 +36,8 @@ export default defineConfig({
 
     {
       name: 'chromium',
+      // Default project runs as an authenticated superuser state from setup.
+      // Guest-specific specs should override with an empty storage state.
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',

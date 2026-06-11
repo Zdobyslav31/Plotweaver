@@ -8,6 +8,9 @@ import {
 } from "./utils/random"
 import { logInUser } from "./utils/user"
 
+// Auth intent: mixed.
+// Top-level checks use shared authenticated state from config.
+// Data-mutation and empty-state flows override to anonymous and create fresh users.
 test("Items page is accessible and shows correct title", async ({ page }) => {
   await page.goto("/items")
   await expect(page.getByRole("heading", { name: "Items" })).toBeVisible()

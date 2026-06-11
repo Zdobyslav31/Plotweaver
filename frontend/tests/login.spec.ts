@@ -2,6 +2,7 @@ import { expect, type Page, test } from "@playwright/test"
 import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
 import { randomPassword } from "./utils/random.ts"
 
+// Auth intent: guest-only login/logout behavior; always start anonymous.
 test.use({ storageState: { cookies: [], origins: [] } })
 
 const fillForm = async (page: Page, email: string, password: string) => {

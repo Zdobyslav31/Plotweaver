@@ -3,6 +3,7 @@ import { findLastEmail } from "./utils/mailcatcher"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser, signUpNewUser } from "./utils/user"
 
+// Auth intent: guest-first recovery flow with user-specific setup inside tests.
 test.use({ storageState: { cookies: [], origins: [] } })
 
 test("Password Recovery title is visible", async ({ page }) => {
