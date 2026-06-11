@@ -1,27 +1,84 @@
-import { expect, test } from "@playwright/test"
-import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
+import { expect, test } from "./fixtures/auth"
 import { createUser } from "./utils/privateApi.ts"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser, logOutUser } from "./utils/user"
 
 // Auth intent: mixed.
-// Top-level settings/theme checks use shared authenticated state from config.
+// Top-level settings/theme checks use a reusable regular user account.
 // Profile/password mutation flows override to anonymous and create fresh users.
 const tabs = ["My profile", "Password", "Danger zone"]
 
-test("My profile tab is active by default", async ({ page }) => {
-  await page.goto("/settings")
-  await expect(page.getByRole("tab", { name: "My profile" })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  )
-})
+test.describe("Settings basic access", () => {
+  test.use({ storageState: { cookies: [], origins: [] } })
 
-test("All tabs are visible", async ({ page }) => {
-  await page.goto("/settings")
-  for (const tab of tabs) {
-    await expect(page.getByRole("tab", { name: tab })).toBeVisible()
-  }
+  test.beforeEach(async ({ page, regularUserAccount }) => {
+    await logInUser(page, regularUserAccount.email, regularUserAccount.password)
+    await page.goto("/settings")
+  })
+
+  test("My profile tab is active by default", async ({ page }) => {
+    await expect(page.getByRole("tab", { name: "My profile" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    )
+  })
+
+  test("All tabs are visible", async ({ page }) => {
+    for (const tab of tabs) {
+      await expect(page.getByRole("tab", { name: tab })).toBeVisible()
+    }
+  })
+
+  test("Appearance button is visible in sidebar", async ({ page }) => {
+    await expect(page.getByTestId("theme-button")).toBeVisible()
+  })
+
+  test("User can switch between theme modes", async ({ page }) => {
+    await page.getByTestId("theme-button").click()
+    await page.getByTestId("dark-mode").click()
+    await expect(page.locator("html")).toHaveClass(/dark/)
+
+    await expect(page.getByTestId("dark-mode")).not.toBeVisible()
+
+    await page.getByTestId("theme-button").click()
+    await page.getByTestId("light-mode").click()
+    await expect(page.locator("html")).toHaveClass(/light/)
+  })
+
+  test("Selected mode is preserved across sessions", async ({
+    page,
+    regularUserAccount,
+  }) => {
+    await page.getByTestId("theme-button").click()
+    if (
+      await page.evaluate(() =>
+        document.documentElement.classList.contains("dark"),
+      )
+    ) {
+      await page.getByTestId("light-mode").click()
+      await page.getByTestId("theme-button").click()
+    }
+
+    const isLightMode = await page.evaluate(() =>
+      document.documentElement.classList.contains("light"),
+    )
+    expect(isLightMode).toBe(true)
+
+    await page.getByTestId("theme-button").click()
+    await page.getByTestId("dark-mode").click()
+    let isDarkMode = await page.evaluate(() =>
+      document.documentElement.classList.contains("dark"),
+    )
+    expect(isDarkMode).toBe(true)
+
+    await logOutUser(page)
+    await logInUser(page, regularUserAccount.email, regularUserAccount.password)
+
+    isDarkMode = await page.evaluate(() =>
+      document.documentElement.classList.contains("dark"),
+    )
+    expect(isDarkMode).toBe(true)
+  })
 })
 
 test.describe("Edit user profile", () => {
@@ -203,57 +260,4 @@ test.describe("Change password validation", () => {
       page.getByText("New password cannot be the same as the current one"),
     ).toBeVisible()
   })
-})
-
-test("Appearance button is visible in sidebar", async ({ page }) => {
-  await page.goto("/settings")
-  await expect(page.getByTestId("theme-button")).toBeVisible()
-})
-
-test("User can switch between theme modes", async ({ page }) => {
-  await page.goto("/settings")
-
-  await page.getByTestId("theme-button").click()
-  await page.getByTestId("dark-mode").click()
-  await expect(page.locator("html")).toHaveClass(/dark/)
-
-  await expect(page.getByTestId("dark-mode")).not.toBeVisible()
-
-  await page.getByTestId("theme-button").click()
-  await page.getByTestId("light-mode").click()
-  await expect(page.locator("html")).toHaveClass(/light/)
-})
-
-test("Selected mode is preserved across sessions", async ({ page }) => {
-  await page.goto("/settings")
-
-  await page.getByTestId("theme-button").click()
-  if (
-    await page.evaluate(() =>
-      document.documentElement.classList.contains("dark"),
-    )
-  ) {
-    await page.getByTestId("light-mode").click()
-    await page.getByTestId("theme-button").click()
-  }
-
-  const isLightMode = await page.evaluate(() =>
-    document.documentElement.classList.contains("light"),
-  )
-  expect(isLightMode).toBe(true)
-
-  await page.getByTestId("theme-button").click()
-  await page.getByTestId("dark-mode").click()
-  let isDarkMode = await page.evaluate(() =>
-    document.documentElement.classList.contains("dark"),
-  )
-  expect(isDarkMode).toBe(true)
-
-  await logOutUser(page)
-  await logInUser(page, firstSuperuser, firstSuperuserPassword)
-
-  isDarkMode = await page.evaluate(() =>
-    document.documentElement.classList.contains("dark"),
-  )
-  expect(isDarkMode).toBe(true)
 })
