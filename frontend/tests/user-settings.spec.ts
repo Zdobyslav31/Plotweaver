@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures/auth"
+import { logInUser } from "./utils/privateApi"
 import { randomEmail, randomPassword } from "./utils/random"
-import { logInUser, logOutUser } from "./utils/user"
+import { logInUser as logInUserUi, logOutUser } from "./utils/user"
 
 // Auth intent: mixed.
 // Top-level settings/theme checks use a reusable regular user account.
@@ -71,7 +72,11 @@ test.describe("Settings basic access", () => {
     expect(isDarkMode).toBe(true)
 
     await logOutUser(page)
-    await logInUser(page, regularUserAccount.email, regularUserAccount.password)
+    await logInUserUi(
+      page,
+      regularUserAccount.email,
+      regularUserAccount.password,
+    )
 
     isDarkMode = await page.evaluate(() =>
       document.documentElement.classList.contains("dark"),
@@ -148,7 +153,7 @@ test.describe("Cancel edit actions", () => {
     page,
     freshUserAccount,
   }) => {
-    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
+    await logInUserUi(page, freshUserAccount.email, freshUserAccount.password)
     await page.goto("/settings")
     await page.getByRole("tab", { name: "My profile" }).click()
     await page.locator("form").getByRole("button", { name: "Edit" }).click()
@@ -163,7 +168,7 @@ test.describe("Cancel edit actions", () => {
     page,
     freshUserAccount,
   }) => {
-    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
+    await logInUserUi(page, freshUserAccount.email, freshUserAccount.password)
     await page.goto("/settings")
     await page.getByRole("tab", { name: "My profile" }).click()
     await page.locator("form").getByRole("button", { name: "Edit" }).click()
@@ -183,7 +188,7 @@ test.describe("Change password", () => {
     const password = freshUserAccount.password
     const newPassword = randomPassword()
 
-    await logInUser(page, freshUserAccount.email, password)
+    await logInUserUi(page, freshUserAccount.email, password)
 
     await page.goto("/settings")
     await page.getByRole("tab", { name: "Password" }).click()
@@ -195,7 +200,7 @@ test.describe("Change password", () => {
     await expect(page.getByText("Password updated successfully")).toBeVisible()
 
     await logOutUser(page)
-    await logInUser(page, freshUserAccount.email, newPassword)
+    await logInUserUi(page, freshUserAccount.email, newPassword)
   })
 })
 

@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures/auth"
+import { logInUser } from "./utils/privateApi"
 import { randomItemDescription, randomItemTitle } from "./utils/random"
-import { logInUser } from "./utils/user"
+import { logInUser as logInUserUi } from "./utils/user"
 
 // Auth intent: mixed.
 // Top-level checks use a reusable regular user account.
@@ -119,7 +120,7 @@ test.describe("Items empty state", () => {
     page,
     freshUserAccount,
   }) => {
-    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
+    await logInUserUi(page, freshUserAccount.email, freshUserAccount.password)
 
     await page.goto("/items")
 

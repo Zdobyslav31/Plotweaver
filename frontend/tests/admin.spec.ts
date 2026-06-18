@@ -1,6 +1,6 @@
 import { expect, test } from "./fixtures/auth"
+import { logInUser } from "./utils/privateApi"
 import { randomEmail, randomPassword } from "./utils/random"
-import { logInUser } from "./utils/user"
 
 // Auth intent: mixed.
 // Admin paths always use explicit superuser login.
