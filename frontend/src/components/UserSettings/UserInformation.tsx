@@ -103,14 +103,15 @@ const UserInformation = () => {
               ) : (
                 <FormItem>
                   <FormLabel>Full name</FormLabel>
-                  <p
-                    className={cn(
-                      "py-2 truncate max-w-sm",
-                      !field.value && "text-muted-foreground",
-                    )}
-                  >
-                    {field.value || "N/A"}
-                  </p>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      value={field.value ?? ""}
+                      disabled
+                      readOnly
+                      className={cn(!field.value && "text-muted-foreground")}
+                    />
+                  </FormControl>
                 </FormItem>
               )
             }
@@ -131,7 +132,14 @@ const UserInformation = () => {
               ) : (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <p className="py-2 truncate max-w-sm">{field.value}</p>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      value={field.value ?? ""}
+                      disabled
+                      readOnly
+                    />
+                  </FormControl>
                 </FormItem>
               )
             }

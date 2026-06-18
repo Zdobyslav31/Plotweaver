@@ -1,29 +1,38 @@
-import { expect, test } from "@playwright/test"
-import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
-import { createUser } from "./utils/privateApi"
+import { expect, test } from "./fixtures/auth"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser } from "./utils/user"
 
 // Auth intent: mixed.
-// Default tests use shared authenticated superuser state from config,
-// while access-control checks override to anonymous state explicitly.
-test("Admin page is accessible and shows correct title", async ({ page }) => {
-  await page.goto("/admin")
-  await expect(page.getByRole("heading", { name: "Users" })).toBeVisible()
-  await expect(
-    page.getByText("Manage user accounts and permissions"),
-  ).toBeVisible()
-})
+// Admin paths always use explicit superuser login.
+test.describe("Admin basic access", () => {
+  test.use({ storageState: { cookies: [], origins: [] } })
 
-test("Add User button is visible", async ({ page }) => {
-  await page.goto("/admin")
-  await expect(page.getByRole("button", { name: "Add User" })).toBeVisible()
+  test.beforeEach(async ({ page, superuserAccount }) => {
+    await logInUser(page, superuserAccount.email, superuserAccount.password)
+    await page.goto("/admin")
+  })
+
+  test("Admin page is accessible and shows correct title", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Users" })).toBeVisible()
+    await expect(
+      page.getByText("Manage user accounts and permissions"),
+    ).toBeVisible()
+  })
+
+  test("Add User button is visible", async ({ page }) => {
+    await expect(page.getByRole("button", { name: "Add User" })).toBeVisible()
+  })
 })
 
 test.describe("Admin user management", () => {
-  test("Create a new user successfully", async ({ page }) => {
-    await page.goto("/admin")
+  test.use({ storageState: { cookies: [], origins: [] } })
 
+  test.beforeEach(async ({ page, superuserAccount }) => {
+    await logInUser(page, superuserAccount.email, superuserAccount.password)
+    await page.goto("/admin")
+  })
+
+  test("Create a new user successfully", async ({ page }) => {
     const email = randomEmail()
     const password = randomPassword()
     const fullName = "Test User Admin"
@@ -46,8 +55,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Create a superuser", async ({ page }) => {
-    await page.goto("/admin")
-
     const email = randomEmail()
     const password = randomPassword()
 
@@ -70,8 +77,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Edit a user successfully", async ({ page }) => {
-    await page.goto("/admin")
-
     const email = randomEmail()
     const password = randomPassword()
     const originalName = "Original Name"
@@ -100,8 +105,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Delete a user successfully", async ({ page }) => {
-    await page.goto("/admin")
-
     const email = randomEmail()
     const password = randomPassword()
 
@@ -132,8 +135,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Cancel user creation", async ({ page }) => {
-    await page.goto("/admin")
-
     await page.getByRole("button", { name: "Add User" }).click()
     await page.getByPlaceholder("Email").fill("test@example.com")
 
@@ -143,8 +144,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Email is required and must be valid", async ({ page }) => {
-    await page.goto("/admin")
-
     await page.getByRole("button", { name: "Add User" }).click()
 
     await page.getByPlaceholder("Email").fill("invalid-email")
@@ -154,8 +153,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Password must be at least 8 characters", async ({ page }) => {
-    await page.goto("/admin")
-
     await page.getByRole("button", { name: "Add User" }).click()
 
     await page.getByPlaceholder("Email").fill(randomEmail())
@@ -169,8 +166,6 @@ test.describe("Admin user management", () => {
   })
 
   test("Passwords must match", async ({ page }) => {
-    await page.goto("/admin")
-
     await page.getByRole("button", { name: "Add User" }).click()
 
     await page.getByPlaceholder("Email").fill(randomEmail())
@@ -185,12 +180,11 @@ test.describe("Admin user management", () => {
 test.describe("Admin page access control", () => {
   test.use({ storageState: { cookies: [], origins: [] } })
 
-  test("Non-superuser cannot access admin page", async ({ page }) => {
-    const email = randomEmail()
-    const password = randomPassword()
-
-    await createUser({ email, password })
-    await logInUser(page, email, password)
+  test("Non-superuser cannot access admin page", async ({
+    page,
+    freshUserAccount,
+  }) => {
+    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
 
     await page.goto("/admin")
 
@@ -198,8 +192,11 @@ test.describe("Admin page access control", () => {
     await expect(page).not.toHaveURL(/\/admin/)
   })
 
-  test("Superuser can access admin page", async ({ page }) => {
-    await logInUser(page, firstSuperuser, firstSuperuserPassword)
+  test("Superuser can access admin page", async ({
+    page,
+    superuserAccount,
+  }) => {
+    await logInUser(page, superuserAccount.email, superuserAccount.password)
 
     await page.goto("/admin")
 
