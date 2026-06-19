@@ -79,6 +79,18 @@ export const test = base.extend<AuthFixtures & OverrideFixtures>({
       const email = `e2e.regular-user.${getTestRunId()}.w${testInfo.workerIndex}.${Math.random().toString(36).slice(2, 8)}@example.com`
       await createUser({ email, password })
       credentials = { email, password }
+
+      // Best-effort: persist credentials so subsequent tests can reuse this account.
+      try {
+        fs.mkdirSync("playwright/.auth", { recursive: true })
+        fs.writeFileSync(
+          "playwright/.auth/regular_user_credentials.json",
+          JSON.stringify(credentials),
+          "utf-8",
+        )
+      } catch {
+        // Ignore persistence errors (e.g. read-only FS).
+      }
     }
 
     await annotateTestAccount({
