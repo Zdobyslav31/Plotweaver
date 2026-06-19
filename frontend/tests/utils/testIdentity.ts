@@ -22,7 +22,7 @@ const slugifySegment = (value: string, maxLength: number) => {
 }
 
 const fileStem = (filePath: string) => {
-  const name = filePath.split("/").pop() ?? filePath
+  const name = filePath.split(/[\\/]/).pop() ?? filePath
   return name.replace(/\.[^/.]+$/, "")
 }
 
