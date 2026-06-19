@@ -22,9 +22,7 @@ setup("authenticate as regular user", async ({ page }) => {
   const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}.${randomEmail()}`
   const password = randomPassword()
   await createUser({ email, password })
-  console.log(
-    `Logging in as regular user for e2e tests: ${email} / ${password}`,
-  )
+
   await page.goto("/login")
   await page.getByTestId("email-input").fill(email)
   await page.getByTestId("password-input").fill(password)
