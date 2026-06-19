@@ -2,8 +2,8 @@ import fs from "node:fs"
 import { test as base, expect } from "@playwright/test"
 
 import { firstSuperuser, firstSuperuserPassword } from "../config"
-import { createUser } from "../utils/privateApi"
 import { randomPassword } from "../utils/random"
+import { createUser } from "../utils/setupAuthApi"
 import {
   annotateTestAccount,
   buildRunScopedEmail,

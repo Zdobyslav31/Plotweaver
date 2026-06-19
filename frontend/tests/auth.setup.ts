@@ -1,8 +1,8 @@
 import fs from "node:fs"
 import { test as setup } from "@playwright/test"
 import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
-import { createUser } from "./utils/privateApi"
 import { randomEmail, randomPassword } from "./utils/random"
+import { createUser } from "./utils/setupAuthApi"
 
 // Auth intent: bootstrap shared authenticated states for default project runs.
 const authDir = "playwright/.auth"
