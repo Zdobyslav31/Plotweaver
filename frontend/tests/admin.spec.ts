@@ -5,7 +5,7 @@ import { randomEmail, randomPassword } from "./utils/random"
 // Auth intent: mixed.
 // Admin paths always use explicit superuser login.
 test.describe("Admin basic access", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, superuserAccount }) => {
     await logInUser(page, superuserAccount.email, superuserAccount.password)
@@ -25,7 +25,7 @@ test.describe("Admin basic access", () => {
 })
 
 test.describe("Admin user management", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, superuserAccount }) => {
     await logInUser(page, superuserAccount.email, superuserAccount.password)
@@ -97,11 +97,11 @@ test.describe("Admin user management", () => {
 
     await page.getByRole("menuitem", { name: "Edit User" }).click()
 
-    await page.getByPlaceholder("Full name").fill(updatedName)
+    await page.getByLabel("Full name").fill(updatedName)
     await page.getByRole("button", { name: "Save" }).click()
 
     await expect(page.getByText("User updated successfully")).toBeVisible()
-    await expect(page.getByText(updatedName)).toBeVisible()
+    await expect(page.getByLabel("Full name")).toHaveValue(updatedName)
   })
 
   test("Delete a user successfully", async ({ page }) => {
@@ -178,7 +178,7 @@ test.describe("Admin user management", () => {
 })
 
 test.describe("Admin page access control", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test("Non-superuser cannot access admin page", async ({
     page,

@@ -1,9 +1,10 @@
-import { expect, type Page, test } from "@playwright/test"
+import type { Page } from "@playwright/test"
+import { expect, test } from "./fixtures/auth"
 
 import { randomEmail, randomPassword } from "./utils/random"
 
 // Auth intent: guest-only signup behavior; always start anonymous.
-test.use({ storageState: { cookies: [], origins: [] } })
+test.use({ guestAuth: true })
 
 const fillForm = async (
   page: Page,

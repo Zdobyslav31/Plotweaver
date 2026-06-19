@@ -1,13 +1,12 @@
 import { expect, test } from "./fixtures/auth"
 import { logInUser } from "./utils/privateApi"
 import { randomItemDescription, randomItemTitle } from "./utils/random"
-import { logInUser as logInUserUi } from "./utils/user"
 
 // Auth intent: mixed.
 // Top-level checks use a reusable regular user account.
 // Data-mutation and empty-state flows override to anonymous and create fresh users.
 test.describe("Items basic access", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, regularUserAccount }) => {
     await logInUser(page, regularUserAccount.email, regularUserAccount.password)
@@ -25,7 +24,7 @@ test.describe("Items basic access", () => {
 })
 
 test.describe("Items management", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, freshUserAccount }) => {
     await logInUser(page, freshUserAccount.email, freshUserAccount.password)
@@ -114,13 +113,13 @@ test.describe("Items management", () => {
 })
 
 test.describe("Items empty state", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test("Shows empty state message when no items exist", async ({
     page,
     freshUserAccount,
   }) => {
-    await logInUserUi(page, freshUserAccount.email, freshUserAccount.password)
+    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
 
     await page.goto("/items")
 

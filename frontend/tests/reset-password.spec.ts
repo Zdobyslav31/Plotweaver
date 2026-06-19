@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "./fixtures/auth"
 import { findLastEmail } from "./utils/mailcatcher"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser, signUpNewUser } from "./utils/user"
 
 // Auth intent: guest-first recovery flow with user-specific setup inside tests.
-test.use({ storageState: { cookies: [], origins: [] } })
+test.use({ guestAuth: true })
 
 test("Password Recovery title is visible", async ({ page }) => {
   await page.goto("/recover-password")

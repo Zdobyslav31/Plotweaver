@@ -9,7 +9,7 @@ import { logInUser as logInUserUi, logOutUser } from "./utils/user"
 const tabs = ["My profile", "Password", "Danger zone"]
 
 test.describe("Settings basic access", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, regularUserAccount }) => {
     await logInUser(page, regularUserAccount.email, regularUserAccount.password)
@@ -86,7 +86,7 @@ test.describe("Settings basic access", () => {
 })
 
 test.describe("Edit user profile", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, freshUserAccount }) => {
     await logInUser(page, freshUserAccount.email, freshUserAccount.password)
@@ -124,7 +124,7 @@ test.describe("Edit user profile", () => {
 })
 
 test.describe("Edit user email", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test.beforeEach(async ({ page, freshUserAccount }) => {
     await logInUser(page, freshUserAccount.email, freshUserAccount.password)
@@ -147,7 +147,7 @@ test.describe("Edit user email", () => {
 })
 
 test.describe("Cancel edit actions", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test("Cancel edit action restores original name", async ({
     page,
@@ -182,7 +182,7 @@ test.describe("Cancel edit actions", () => {
 })
 
 test.describe("Change password", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
 
   test("Update password successfully", async ({ page, freshUserAccount }) => {
     const password = freshUserAccount.password
@@ -205,7 +205,7 @@ test.describe("Change password", () => {
 })
 
 test.describe("Change password validation", () => {
-  test.use({ storageState: { cookies: [], origins: [] } })
+  test.use({ guestAuth: true })
   let password: string
 
   test.beforeEach(async ({ page, freshUserAccount }) => {
