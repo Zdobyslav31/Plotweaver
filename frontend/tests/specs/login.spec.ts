@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test"
-import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
-import { expect, test } from "./fixtures/auth"
-import { randomPassword } from "./utils/random.ts"
+import { firstSuperuser, firstSuperuserPassword } from "../config.ts"
+import { expect, test } from "../fixtures/auth.ts"
+import { randomPassword } from "../utils/random.ts"
 
 // Auth intent: guest-only login/logout behavior; always start anonymous.
 test.use({ guestAuth: true })
