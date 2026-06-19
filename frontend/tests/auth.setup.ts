@@ -21,9 +21,6 @@ setup("authenticate as regular user", async ({ page }) => {
   fs.mkdirSync(authDir, { recursive: true })
   const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}.${randomEmail()}`
   const password = randomPassword()
-  console.log(
-    `Creating regular user account for e2e tests: ${email} / ${password}`,
-  )
   await createUser({ email, password })
   console.log(
     `Logging in as regular user for e2e tests: ${email} / ${password}`,
