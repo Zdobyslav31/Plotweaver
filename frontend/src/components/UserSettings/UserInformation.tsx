@@ -107,9 +107,10 @@ const UserInformation = () => {
                     <Input
                       type="text"
                       value={field.value ?? ""}
+                      placeholder="N/A"
                       disabled
                       readOnly
-                      className={cn(!field.value && "text-muted-foreground")}
+                      className={cn(!field.value && "placeholder:text-muted-foreground")}
                     />
                   </FormControl>
                 </FormItem>
