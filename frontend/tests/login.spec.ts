@@ -1,8 +1,10 @@
-import { expect, type Page, test } from "@playwright/test"
+import type { Page } from "@playwright/test"
 import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
+import { expect, test } from "./fixtures/auth"
 import { randomPassword } from "./utils/random.ts"
 
-test.use({ storageState: { cookies: [], origins: [] } })
+// Auth intent: guest-only login/logout behavior; always start anonymous.
+test.use({ guestAuth: true })
 
 const fillForm = async (page: Page, email: string, password: string) => {
   await page.getByTestId("email-input").fill(email)

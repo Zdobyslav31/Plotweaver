@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config'
 
+if (!process.env.PW_TEST_RUN_ID) {
+  process.env.PW_TEST_RUN_ID = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+}
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -36,6 +40,8 @@ export default defineConfig({
 
     {
       name: 'chromium',
+      // Default project runs as an authenticated superuser state from setup.
+      // Guest-specific specs should override with an empty storage state.
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
