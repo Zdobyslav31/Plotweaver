@@ -2,7 +2,7 @@ import fs from "node:fs"
 import { test as setup } from "@playwright/test"
 import { firstSuperuser, firstSuperuserPassword } from "./config.ts"
 import { createUser } from "./utils/privateApi"
-import { randomPassword } from "./utils/random"
+import { randomEmail, randomPassword } from "./utils/random"
 
 // Auth intent: bootstrap shared authenticated states for default project runs.
 const authDir = "playwright/.auth"
@@ -19,11 +19,15 @@ setup("authenticate as superuser", async ({ page }) => {
 
 setup("authenticate as regular user", async ({ page }) => {
   fs.mkdirSync(authDir, { recursive: true })
-  const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}@example.com`
+  const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}.${randomEmail()}`
   const password = randomPassword()
-
+  console.log(
+    `Creating regular user account for e2e tests: ${email} / ${password}`,
+  )
   await createUser({ email, password })
-
+  console.log(
+    `Logging in as regular user for e2e tests: ${email} / ${password}`,
+  )
   await page.goto("/login")
   await page.getByTestId("email-input").fill(email)
   await page.getByTestId("password-input").fill(password)
