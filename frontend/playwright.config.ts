@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config'
 
 if (!process.env.PW_TEST_RUN_ID) {
-  process.env.PW_TEST_RUN_ID = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14)
+  process.env.PW_TEST_RUN_ID = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
 }
 
 /**

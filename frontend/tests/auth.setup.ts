@@ -8,6 +8,7 @@ import { randomPassword } from "./utils/random"
 const authDir = "playwright/.auth"
 
 setup("authenticate as superuser", async ({ page }) => {
+  fs.mkdirSync(authDir, { recursive: true })
   await page.goto("/login")
   await page.getByTestId("email-input").fill(firstSuperuser)
   await page.getByTestId("password-input").fill(firstSuperuserPassword)
@@ -20,11 +21,7 @@ setup("authenticate as regular user", async ({ page }) => {
   const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}@example.com`
   const password = randomPassword()
 
-  try {
-    await createUser({ email, password })
-  } catch {
-    // User may already exist from a previous run
-  }
+  await createUser({ email, password })
 
   await page.goto("/login")
   await page.getByTestId("email-input").fill(email)
@@ -33,7 +30,6 @@ setup("authenticate as regular user", async ({ page }) => {
   await page.waitForURL("/")
   await page.context().storageState({ path: `${authDir}/regular_user.json` })
 
-  fs.mkdirSync(authDir, { recursive: true })
   fs.writeFileSync(
     `${authDir}/regular_user_credentials.json`,
     JSON.stringify({ email, password }),

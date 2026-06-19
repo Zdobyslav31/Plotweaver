@@ -206,20 +206,22 @@ test.describe("Change password", () => {
 
 test.describe("Change password validation", () => {
   test.use({ guestAuth: true })
-  let password: string
 
   test.beforeEach(async ({ page, freshUserAccount }) => {
-    password = freshUserAccount.password
-
-    await logInUser(page, freshUserAccount.email, password)
+    await logInUser(page, freshUserAccount.email, freshUserAccount.password)
     await page.goto("/settings")
     await page.getByRole("tab", { name: "Password" }).click()
   })
 
-  test("Update password with weak passwords", async ({ page }) => {
+  test("Update password with weak passwords", async ({
+    page,
+    freshUserAccount,
+  }) => {
     const weakPassword = "weak"
 
-    await page.getByTestId("current-password-input").fill(password)
+    await page
+      .getByTestId("current-password-input")
+      .fill(freshUserAccount.password)
     await page.getByTestId("new-password-input").fill(weakPassword)
     await page.getByTestId("confirm-password-input").fill(weakPassword)
     await page.getByRole("button", { name: "Update Password" }).click()
@@ -231,8 +233,11 @@ test.describe("Change password validation", () => {
 
   test("New password and confirmation password do not match", async ({
     page,
+    freshUserAccount,
   }) => {
-    await page.getByTestId("current-password-input").fill(password)
+    await page
+      .getByTestId("current-password-input")
+      .fill(freshUserAccount.password)
     await page.getByTestId("new-password-input").fill(randomPassword())
     await page.getByTestId("confirm-password-input").fill(randomPassword())
     await page.getByRole("button", { name: "Update Password" }).click()
@@ -240,10 +245,17 @@ test.describe("Change password validation", () => {
     await expect(page.getByText("The passwords don't match")).toBeVisible()
   })
 
-  test("Current password and new password are the same", async ({ page }) => {
-    await page.getByTestId("current-password-input").fill(password)
-    await page.getByTestId("new-password-input").fill(password)
-    await page.getByTestId("confirm-password-input").fill(password)
+  test("Current password and new password are the same", async ({
+    page,
+    freshUserAccount,
+  }) => {
+    await page
+      .getByTestId("current-password-input")
+      .fill(freshUserAccount.password)
+    await page.getByTestId("new-password-input").fill(freshUserAccount.password)
+    await page
+      .getByTestId("confirm-password-input")
+      .fill(freshUserAccount.password)
     await page.getByRole("button", { name: "Update Password" }).click()
 
     await expect(
