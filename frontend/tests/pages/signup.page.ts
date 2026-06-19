@@ -8,6 +8,7 @@ export class SignupPage {
   readonly passwordInput!: Locator
   readonly confirmPasswordInput!: Locator
   readonly submitButton!: Locator
+  readonly loginLink: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -21,6 +22,7 @@ export class SignupPage {
     this.submitButton = this.signupForm.getByRole("button", {
       name: "Sign Up",
     })
+    this.loginLink = page.getByRole("link", { name: "Log In" })
   }
 
   async goto() {

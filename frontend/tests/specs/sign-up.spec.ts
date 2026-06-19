@@ -29,9 +29,7 @@ test.describe("Sign Up page", () => {
   test("Log In link is visible", async ({ page }) => {
     const signupPage = new SignupPage(page)
 
-    await expect(
-      signupPage.page.getByRole("link", { name: "Log In" }),
-    ).toBeVisible()
+    await expect(signupPage.loginLink).toBeVisible()
   })
 
   test("Sign up with valid name, email, and password", async ({ page }) => {
@@ -69,16 +67,23 @@ test.describe("Sign Up page", () => {
     const password = randomPassword()
 
     await signupPage.fillForm(fullName, email, password, password)
-    await signupPage.submitButton.click()
+    await Promise.all([
+      page.waitForURL("**/login"),
+      signupPage.submitButton.click(),
+    ])
 
     await signupPage.goto()
+    await expect(page).toHaveURL(/\/signup$/)
 
     await signupPage.fillForm(fullName, email, password, password)
     await signupPage.submitButton.click()
 
-    await page
-      .getByText("The user with this email already exists in the system")
-      .click()
+    const notifications = page.getByRole("region", { name: /Notifications/i })
+    await expect(
+      notifications.getByText(
+        "The user with this email already exists in the system",
+      ),
+    ).toBeVisible()
   })
 
   test("Sign up with weak password", async ({ page }) => {
