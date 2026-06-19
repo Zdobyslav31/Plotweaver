@@ -18,6 +18,7 @@ setup("authenticate as superuser", async ({ page }) => {
 })
 
 setup("authenticate as regular user", async ({ page }) => {
+  fs.mkdirSync(authDir, { recursive: true })
   const email = `e2e.regular-user.${process.env.PW_TEST_RUN_ID ?? "local"}@example.com`
   const password = randomPassword()
 
