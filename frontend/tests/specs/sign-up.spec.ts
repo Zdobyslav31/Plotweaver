@@ -1,23 +1,9 @@
-import type { Page } from "@playwright/test"
 import { expect, test } from "../fixtures/auth"
 import { SignupPage } from "../pages/signup.page"
 import { randomEmail, randomPassword } from "../utils/random"
 
 // Auth intent: guest-only signup behavior; always start anonymous.
 test.use({ guestAuth: true })
-
-const _fillForm = async (
-  page: Page,
-  full_name: string,
-  email: string,
-  password: string,
-  confirm_password: string,
-) => {
-  await page.getByTestId("full-name-input").fill(full_name)
-  await page.getByTestId("email-input").fill(email)
-  await page.getByTestId("password-input").fill(password)
-  await page.getByTestId("confirm-password-input").fill(confirm_password)
-}
 
 test.describe("Sign Up page", () => {
   test.beforeEach(async ({ page }) => {
@@ -27,6 +13,7 @@ test.describe("Sign Up page", () => {
 
   test("Inputs are visible, empty and editable", async ({ page }) => {
     const signupPage = new SignupPage(page)
+
     await signupPage.verifyEmptyInput("Full Name")
     await signupPage.verifyEmptyInput("Email")
     await signupPage.verifyEmptyInput("Password")
@@ -41,7 +28,6 @@ test.describe("Sign Up page", () => {
 
   test("Log In link is visible", async ({ page }) => {
     const signupPage = new SignupPage(page)
-    await signupPage.goto()
 
     await expect(
       signupPage.page.getByRole("link", { name: "Log In" }),
@@ -50,6 +36,7 @@ test.describe("Sign Up page", () => {
 
   test("Sign up with valid name, email, and password", async ({ page }) => {
     const signupPage = new SignupPage(page)
+
     const full_name = "Test User"
     const email = randomEmail()
     const password = randomPassword()
@@ -142,8 +129,6 @@ test.describe("Sign Up page", () => {
     const fullName = "Test User"
     const email = ""
     const password = randomPassword()
-
-    await page.goto("/signup")
 
     await signupPage.fillForm(fullName, email, password, password)
     await signupPage.submitButton.click()
