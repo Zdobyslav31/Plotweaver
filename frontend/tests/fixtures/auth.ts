@@ -86,7 +86,7 @@ export const test = base.extend<AuthFixtures & OverrideFixtures>({
         fs.writeFileSync(
           "playwright/.auth/regular_user_credentials.json",
           JSON.stringify(credentials),
-          "utf-8",
+          { encoding: "utf-8", flag: "wx" },
         )
       } catch {
         // Ignore persistence errors (e.g. read-only FS).
