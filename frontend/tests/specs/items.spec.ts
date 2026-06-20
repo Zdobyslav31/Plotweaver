@@ -1,6 +1,6 @@
-import { expect, test } from "./fixtures/auth"
-import { randomItemDescription, randomItemTitle } from "./utils/random"
-import { logInUser } from "./utils/setupAuthApi"
+import { expect, test } from "../fixtures/auth"
+import { randomItemDescription, randomItemTitle } from "../utils/random"
+import { logInUser } from "../utils/setupAuthApi"
 
 // Auth intent: mixed.
 // Top-level checks use a reusable regular user account.

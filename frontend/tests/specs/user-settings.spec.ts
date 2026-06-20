@@ -1,7 +1,7 @@
-import { expect, test } from "./fixtures/auth"
-import { randomEmail, randomPassword } from "./utils/random"
-import { logInUser } from "./utils/setupAuthApi"
-import { logInUser as logInUserUi, logOutUser } from "./utils/user"
+import { expect, test } from "../fixtures/auth"
+import { randomEmail, randomPassword } from "../utils/random"
+import { logInUser } from "../utils/setupAuthApi"
+import { logInUser as logInUserUi, logOutUser } from "../utils/user"
 
 // Auth intent: mixed.
 // Top-level settings/theme checks use a reusable regular user account.
