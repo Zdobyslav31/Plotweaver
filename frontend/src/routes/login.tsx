@@ -90,6 +90,7 @@ function Login() {
                       data-testid="email-input"
                       placeholder="user@example.com"
                       type="email"
+                      required
                       {...field}
                     />
                   </FormControl>
@@ -116,6 +117,7 @@ function Login() {
                     <PasswordInput
                       data-testid="password-input"
                       placeholder="Password"
+                      required
                       {...field}
                     />
                   </FormControl>

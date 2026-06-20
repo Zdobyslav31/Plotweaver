@@ -12,11 +12,11 @@ test.describe("Login page", () => {
     await loginPage.goto()
   })
 
-  test("Inputs are visible, empty and editable", async ({ page }) => {
+  test("Inputs are visible, empty, editable and required", async ({ page }) => {
     const loginPage = new LoginPage(page)
 
-    await loginPage.verifyEmptyInput("Email")
-    await loginPage.verifyEmptyInput("Password")
+    await loginPage.verifyEmptyInput("Email", true)
+    await loginPage.verifyEmptyInput("Password", true)
   })
 
   test("Log In button is visible", async ({ page }) => {
