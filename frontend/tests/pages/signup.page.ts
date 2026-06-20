@@ -46,5 +46,6 @@ export class SignupPage {
     await expect(input).toBeVisible()
     await expect(input).toHaveValue("")
     await expect(input).toBeEditable()
+    await expect(input).toHaveAttribute("required", "")
   }
 }

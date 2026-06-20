@@ -11,7 +11,9 @@ test.describe("Sign Up page", () => {
     await signupPage.goto()
   })
 
-  test("Inputs are visible, empty and editable", async ({ page }) => {
+  test("Inputs are visible, empty, editable, and required", async ({
+    page,
+  }) => {
     const signupPage = new SignupPage(page)
 
     await signupPage.verifyEmptyInput("Full Name")

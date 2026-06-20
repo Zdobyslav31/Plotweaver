@@ -101,6 +101,7 @@ function SignUp() {
                     <Input
                       data-testid="full-name-input"
                       placeholder="User"
+                      required
                       type="text"
                       {...field}
                     />
@@ -120,6 +121,7 @@ function SignUp() {
                     <Input
                       data-testid="email-input"
                       placeholder="user@example.com"
+                      required
                       type="email"
                       {...field}
                     />
@@ -139,6 +141,7 @@ function SignUp() {
                     <PasswordInput
                       data-testid="password-input"
                       placeholder="Password"
+                      required
                       {...field}
                     />
                   </FormControl>
@@ -157,6 +160,7 @@ function SignUp() {
                     <PasswordInput
                       data-testid="confirm-password-input"
                       placeholder="Confirm Password"
+                      required
                       {...field}
                     />
                   </FormControl>
