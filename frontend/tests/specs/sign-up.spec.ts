@@ -16,10 +16,10 @@ test.describe("Sign Up page", () => {
   }) => {
     const signupPage = new SignupPage(page)
 
-    await signupPage.verifyEmptyInput("Full Name")
-    await signupPage.verifyEmptyInput("Email")
-    await signupPage.verifyEmptyInput("Password")
-    await signupPage.verifyEmptyInput("Confirm Password")
+    await signupPage.verifyEmptyInput("Full Name", true)
+    await signupPage.verifyEmptyInput("Email", true)
+    await signupPage.verifyEmptyInput("Password", true)
+    await signupPage.verifyEmptyInput("Confirm Password", true)
   })
 
   test("Sign Up button is visible", async ({ page }) => {

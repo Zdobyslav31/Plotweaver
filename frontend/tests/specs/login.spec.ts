@@ -1,119 +1,98 @@
-import type { Page } from "@playwright/test"
 import { firstSuperuser, firstSuperuserPassword } from "../config.ts"
 import { expect, test } from "../fixtures/auth.ts"
+import { LoginPage } from "../pages/login.page.ts"
 import { randomPassword } from "../utils/random.ts"
 
 // Auth intent: guest-only login/logout behavior; always start anonymous.
 test.use({ guestAuth: true })
 
-const fillForm = async (page: Page, email: string, password: string) => {
-  await page.getByTestId("email-input").fill(email)
-  await page.getByTestId("password-input").fill(password)
-}
+test.describe("Login page", () => {
+  test.beforeEach(async ({ page }) => {
+    const loginPage = new LoginPage(page)
+    await loginPage.goto()
+  })
 
-const verifyInput = async (page: Page, testId: string) => {
-  const input = page.getByTestId(testId)
-  await expect(input).toBeVisible()
-  await expect(input).toHaveText("")
-  await expect(input).toBeEditable()
-}
+  test("Inputs are visible, empty and editable", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-test("Inputs are visible, empty and editable", async ({ page }) => {
-  await page.goto("/login")
+    await loginPage.verifyEmptyInput("Email")
+    await loginPage.verifyEmptyInput("Password")
+  })
 
-  await verifyInput(page, "email-input")
-  await verifyInput(page, "password-input")
-})
+  test("Log In button is visible", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-test("Log In button is visible", async ({ page }) => {
-  await page.goto("/login")
+    await expect(loginPage.submitButton).toBeVisible()
+  })
 
-  await expect(page.getByRole("button", { name: "Log In" })).toBeVisible()
-})
+  test("Forgot Password link is visible", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-test("Forgot Password link is visible", async ({ page }) => {
-  await page.goto("/login")
+    await expect(loginPage.forgotPasswordLink).toBeVisible()
+  })
 
-  await expect(
-    page.getByRole("link", { name: "Forgot your password?" }),
-  ).toBeVisible()
-})
+  test("Log in with valid email and password ", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-test("Log in with valid email and password ", async ({ page }) => {
-  await page.goto("/login")
+    await loginPage.logIn(firstSuperuser, firstSuperuserPassword)
+    await page.waitForURL("/")
 
-  await fillForm(page, firstSuperuser, firstSuperuserPassword)
-  await page.getByRole("button", { name: "Log In" }).click()
+    await loginPage.expectWelcomeMessage()
+  })
 
-  await page.waitForURL("/")
+  test("Log in with invalid email", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-  await expect(
-    page.getByText("Welcome back, nice to see you again!"),
-  ).toBeVisible()
-})
+    await loginPage.fillForm("invalidemail", firstSuperuserPassword)
+    await loginPage.submit()
 
-test("Log in with invalid email", async ({ page }) => {
-  await page.goto("/login")
+    await expect(page.getByText("Invalid email address")).toBeVisible()
+  })
 
-  await fillForm(page, "invalidemail", firstSuperuserPassword)
-  await page.getByRole("button", { name: "Log In" }).click()
+  test("Log in with invalid password", async ({ page }) => {
+    const password = randomPassword()
 
-  await expect(page.getByText("Invalid email address")).toBeVisible()
-})
+    const loginPage = new LoginPage(page)
 
-test("Log in with invalid password", async ({ page }) => {
-  const password = randomPassword()
+    await loginPage.fillForm(firstSuperuser, password)
+    await loginPage.submit()
 
-  await page.goto("/login")
-  await fillForm(page, firstSuperuser, password)
-  await page.getByRole("button", { name: "Log In" }).click()
+    await expect(page.getByText("Incorrect email or password")).toBeVisible()
+  })
 
-  await expect(page.getByText("Incorrect email or password")).toBeVisible()
-})
+  test("Successful log out", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-test("Successful log out", async ({ page }) => {
-  await page.goto("/login")
+    await loginPage.logIn(firstSuperuser, firstSuperuserPassword)
+    await page.waitForURL("/")
 
-  await fillForm(page, firstSuperuser, firstSuperuserPassword)
-  await page.getByRole("button", { name: "Log In" }).click()
+    await loginPage.expectWelcomeMessage()
 
-  await page.waitForURL("/")
+    await loginPage.logOut()
+    await page.waitForURL("/login")
+  })
 
-  await expect(
-    page.getByText("Welcome back, nice to see you again!"),
-  ).toBeVisible()
+  test("Logged-out user cannot access protected routes", async ({ page }) => {
+    const loginPage = new LoginPage(page)
 
-  await page.getByTestId("user-menu").click()
-  await page.getByRole("menuitem", { name: "Log out" }).click()
-  await page.waitForURL("/login")
-  // insignificant change
-})
+    await loginPage.logIn(firstSuperuser, firstSuperuserPassword)
+    await page.waitForURL("/")
 
-test("Logged-out user cannot access protected routes", async ({ page }) => {
-  await page.goto("/login")
+    await loginPage.expectWelcomeMessage()
 
-  await fillForm(page, firstSuperuser, firstSuperuserPassword)
-  await page.getByRole("button", { name: "Log In" }).click()
+    await loginPage.logOut()
+    await page.waitForURL("/login")
 
-  await page.waitForURL("/")
-
-  await expect(
-    page.getByText("Welcome back, nice to see you again!"),
-  ).toBeVisible()
-
-  await page.getByTestId("user-menu").click()
-  await page.getByRole("menuitem", { name: "Log out" }).click()
-  await page.waitForURL("/login")
-
-  await page.goto("/settings")
-  await page.waitForURL("/login")
+    await page.goto("/settings")
+    await page.waitForURL("/login")
+  })
 })
 
 test("Redirects to /login when token is wrong", async ({ page }) => {
+  const loginPage = new LoginPage(page)
+
   await page.goto("/settings")
-  await page.evaluate(() => {
-    localStorage.setItem("access_token", "invalid_token")
-  })
+  await loginPage.setInvalidToken()
   await page.goto("/settings")
   await page.waitForURL("/login")
   await expect(page).toHaveURL("/login")

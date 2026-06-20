@@ -1,7 +1,8 @@
-import { expect, type Locator, type Page } from "@playwright/test"
+import type { Locator, Page } from "@playwright/test"
+import { verifyEmptyInput } from "../utils/helpers"
+import { BasePage } from "./base.page"
 
-export class SignupPage {
-  readonly page: Page
+export class SignupPage extends BasePage {
   readonly signupForm: Locator
   readonly fullNameInput!: Locator
   readonly emailInput!: Locator
@@ -11,7 +12,7 @@ export class SignupPage {
   readonly loginLink: Locator
 
   constructor(page: Page) {
-    this.page = page
+    super(page)
     this.signupForm = page.locator("form")
     this.fullNameInput = this.signupForm.getByLabel("Full Name")
     this.emailInput = this.signupForm.getByLabel("Email")
@@ -41,11 +42,8 @@ export class SignupPage {
     await this.confirmPasswordInput.fill(confirmPassword)
   }
 
-  async verifyEmptyInput(label: string) {
+  async verifyEmptyInput(label: string, required?: boolean) {
     const input = this.signupForm.getByLabel(label, { exact: true })
-    await expect(input).toBeVisible()
-    await expect(input).toHaveValue("")
-    await expect(input).toBeEditable()
-    await expect(input).toHaveAttribute("required", "")
+    await verifyEmptyInput(input, required)
   }
 }
